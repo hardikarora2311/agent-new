@@ -95,13 +95,16 @@ def main():
 
     task = st.text_input(
         "Enter the task:",
-        "Provide a comprehensive financial analysis of our company NaikiAI"
+        "Provide a comprehensive financial analysis of our company NaikiAI",
+        key="task_input"
     )
     uploaded_file = st.file_uploader(
-        "Upload a CSV file with the company's financial data", type=["csv"]
+        "Upload a CSV file with the company's financial data", 
+        type=["csv"],
+        key="file_uploader"
     )
 
-    if st.button("Generate Report") and uploaded_file is not None:
+    if st.button("Generate Report", key="generate_button") and uploaded_file is not None:
         csv_data = uploaded_file.getvalue().decode("utf-8")
 
         initial_state = {
@@ -110,21 +113,49 @@ def main():
         }
         thread = {"configurable": {"thread_id": "1"}}
 
-        final_state = None
+        steps = []
 
-        with get_memory() as memory:
-            graph = builder.compile(checkpointer=memory)
-            for s in graph.stream(initial_state, thread):
-                st.write(s)
-                final_state = s
+        with st.spinner("Generating report..."):
+            with get_memory() as memory:
+                graph = builder.compile(checkpointer=memory)
+                for s in graph.stream(initial_state, thread):
+                    steps.append(s)
 
-        if final_state and "report" in final_state:
-            st.subheader("Financial Analysis Report")
-            st.write(final_state["report"])
+        # Display each step and its context
+        for step in steps:
+            if isinstance(step, dict):
+                step_name = list(step.keys())[0]
+                step_content = step[step_name]
+                
+                st.subheader(f"Step: {step_name}")
+                
+                if step_name == "gather_financials":
+                    st.write("Financial Data Summary:")
+                    st.write(step_content["financial_data"])
+                elif step_name == "analyze_data":
+                    st.write("Analysis:")
+                    st.write(step_content["analysis"])
+                elif step_name == "write_report":
+                    st.write("Report:")
+                    st.write(step_content["report"])
+                elif step_name == "generate_initiatives":
+                    st.write("Initiatives:")
+                    st.write(step_content["initiatives"])
 
-        if final_state and "initiatives" in final_state:
-            st.subheader("Actionable Initiatives and Tips")
-            st.write(final_state["initiatives"])
+        # Display final report and initiatives
+        final_state = steps[-1] if steps else None
+        if final_state and "generate_initiatives" in final_state:
+            final_state = final_state["generate_initiatives"]
+
+            if "report" in final_state:
+                st.subheader("Final Financial Analysis Report")
+                st.write(final_state["report"])
+
+            if "initiatives" in final_state:
+                st.subheader("Final Actionable Initiatives and Tips")
+                st.write(final_state["initiatives"])
+
+            
 
 if __name__ == "__main__":
     main()
