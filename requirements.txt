@@ -1,0 +1,10 @@
+python-dotenv
+langchain
+langgraph
+langchain-openai
+pandas
+streamlit
+langgraph-checkpoint-sqlite  
+langchain
+langchain-pinecone
+pinecone-client
