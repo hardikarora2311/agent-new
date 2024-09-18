@@ -1,0 +1,9 @@
+[server]
+   maxUploadSize = 5
+   maxMessageSize = 50
+
+   [runner]
+   magicEnabled = false
+
+   [browser]
+   gatherUsageStats = false
