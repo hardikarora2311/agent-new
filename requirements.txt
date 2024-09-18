@@ -8,3 +8,4 @@ langgraph-checkpoint-sqlite
 langchain
 langchain-pinecone
 pinecone-client
+langchain_huggingface
