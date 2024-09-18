@@ -9,3 +9,6 @@ langchain
 langchain-pinecone
 pinecone-client
 langchain_huggingface
+transformers
+torch
+sentence-transformers
